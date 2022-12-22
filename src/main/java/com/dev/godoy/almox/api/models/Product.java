@@ -9,7 +9,7 @@ public class Product implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private ObjectId id;
-    private long code;
+    private String code;
     private String description;
     private String group;
     private String unitOfMeasurement;
@@ -18,7 +18,7 @@ public class Product implements Serializable {
     public Product() {
     }
 
-    public Product(ObjectId id, long code, String description, String group, String um, float quantity) {
+    public Product(ObjectId id, String code, String description, String group, String um, float quantity) {
         this.id = id;
         this.code = code;
         this.description = description;
@@ -35,11 +35,11 @@ public class Product implements Serializable {
         this.id = id;
     }
 
-    public long getCode() {
+    public String getCode() {
         return code;
     }
 
-    public void setCode(long code) {
+    public void setCode(String code) {
         this.code = code;
     }
 
