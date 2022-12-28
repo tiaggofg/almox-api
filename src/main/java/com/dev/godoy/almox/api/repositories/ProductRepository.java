@@ -37,13 +37,15 @@ public class ProductRepository {
     }
 
     public Product save(Product product) {
-        product.setId(new ObjectId());
+        product.setId(new ObjectId().toString());
         collection.insertOne(product);
         return product;
     }
 
     public void update(String code, Product product) {
-        product.setId(findByCode(code).getId());
+        Product oldProduct = findByCode(code);
+        product.setId(oldProduct.getId());
+        product.setQuantity(oldProduct.getQuantity());
         Bson filter = eq("code", code);
         collection.findOneAndReplace(filter, product);
     }

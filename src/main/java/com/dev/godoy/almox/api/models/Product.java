@@ -1,37 +1,43 @@
 package com.dev.godoy.almox.api.models;
 
-import org.bson.types.ObjectId;
+import com.dev.godoy.almox.api.dtos.ProductDto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 public class Product implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private ObjectId id;
+    private String id;
     private String code;
     private String description;
     private String group;
-    private String unitOfMeasurement;
+    private String um; // unit of measurement
     private float quantity;
+    private float averageCost;
+    private List<Movement> movements = new ArrayList<>();
+    private Warehouse warehouse;
 
     public Product() {
     }
 
-    public Product(ObjectId id, String code, String description, String group, String um, float quantity) {
+    public Product(String id, String code, String description, String group, String um) {
         this.id = id;
         this.code = code;
         this.description = description;
         this.group = group;
-        this.unitOfMeasurement = um;
-        this.quantity = quantity;
+        this.um = um;
+        quantity = 0.0F;
     }
 
-    public ObjectId getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -59,12 +65,12 @@ public class Product implements Serializable {
         this.group = group;
     }
 
-    public String getUnitOfMeasurement() {
-        return unitOfMeasurement;
+    public String getUm() {
+        return um;
     }
 
-    public void setUnitOfMeasurement(String unitOfMeasurement) {
-        this.unitOfMeasurement = unitOfMeasurement;
+    public void setUm(String um) {
+        this.um = um;
     }
 
     public float getQuantity() {
@@ -73,6 +79,53 @@ public class Product implements Serializable {
 
     public void setQuantity(float quantity) {
         this.quantity = quantity;
+    }
+
+    public float getAverageCost() {
+        return averageCost;
+    }
+
+    public void setAverageCost(float averageCost) {
+        this.averageCost = averageCost;
+    }
+
+    public List<Movement> getMovements() {
+        return movements;
+    }
+
+    public void setMovements(List<Movement> movements) {
+        this.movements = movements;
+    }
+
+    public Warehouse getWarehouse() {
+        return warehouse;
+    }
+
+    public void setWarehouse(Warehouse warehouse) {
+        this.warehouse = warehouse;
+    }
+
+    public void averageCost() {
+        float totalValue = 0.0f;
+        float totalQuantity = 0.0f;
+        Date lastThirtyDays = new Date(System.currentTimeMillis() - 2592000000L); // 2592000000L milliseconds = 30 days
+        for (Movement m : movements) {
+            if (m.getDate().after(lastThirtyDays)) {
+                if (m.getAction() == 'E') {
+                    totalValue += m.getValue();
+                    totalQuantity += m.getQuantity();
+                }
+                if (m.getAction() == 'S') {
+                    totalValue -= m.getValue();
+                    totalQuantity -= m.getQuantity();
+                }
+            }
+        }
+        averageCost = totalValue / totalQuantity;
+    }
+
+    public ProductDto toDto() {
+        return new ProductDto(code, description, group, um);
     }
 
     @Override

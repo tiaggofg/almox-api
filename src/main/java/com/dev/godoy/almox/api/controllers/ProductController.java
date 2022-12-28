@@ -1,5 +1,6 @@
 package com.dev.godoy.almox.api.controllers;
 
+import com.dev.godoy.almox.api.dtos.ProductDto;
 import com.dev.godoy.almox.api.models.Product;
 import com.dev.godoy.almox.api.services.ProductService;
 import io.javalin.http.Context;
@@ -16,25 +17,25 @@ public class ProductController {
     }
 
     public void get(Context ctx) {
-        List<Product> products = service.findAll();
+        List<ProductDto> products = service.findAll();
         ctx.json(products).status(HttpStatus.OK);
     }
 
     public void getByCode(Context ctx) {
         String code = ctx.pathParam("productCode");
-        Product product = service.findByCode(code);
+        ProductDto product = service.findByCode(code);
         ctx.json(product).status(HttpStatus.OK);
     }
 
     public void save(Context ctx) {
-        Product product = ctx.bodyAsClass(Product.class);
-        Product savedProduct = service.save(product);
+        ProductDto product = ctx.bodyAsClass(ProductDto.class);
+        ProductDto savedProduct = service.save(product);
         ctx.json(savedProduct).status(HttpStatus.CREATED);
     }
 
     public void update(Context ctx) {
         String code = ctx.pathParam("productCode");
-        Product product = ctx.bodyAsClass(Product.class);
+        ProductDto product = ctx.bodyAsClass(ProductDto.class);
         service.update(code, product);
         ctx.status(HttpStatus.NO_CONTENT);
     }
