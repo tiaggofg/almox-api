@@ -4,6 +4,9 @@ import com.dev.godoy.almox.api.config.Config;
 import com.dev.godoy.almox.api.controllers.PersonController;
 import com.dev.godoy.almox.api.controllers.ProductController;
 import com.dev.godoy.almox.api.controllers.WarehouseController;
+import com.dev.godoy.almox.api.exceptions.DefaultError;
+import com.dev.godoy.almox.api.exceptions.ObjectNotFoundException;
+import com.dev.godoy.almox.api.exceptions.RequestException;
 import com.dev.godoy.almox.api.repositories.PersonRepository;
 import com.dev.godoy.almox.api.repositories.ProductRepository;
 import com.dev.godoy.almox.api.repositories.WarehouseRepository;
@@ -13,6 +16,7 @@ import com.dev.godoy.almox.api.services.WarehouseService;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import io.javalin.Javalin;
+import io.javalin.http.HttpStatus;
 
 import static io.javalin.apibuilder.ApiBuilder.*;
 
@@ -71,6 +75,22 @@ public class Application {
                     delete(personController::delete);
                 });
             });
+        });
+
+        app.exception(ObjectNotFoundException.class, (e, ctx) -> {
+            HttpStatus status = HttpStatus.NOT_FOUND;
+            String errorMessage = e.getMessage();
+            String path = ctx.path();
+            DefaultError error = new DefaultError(status.toString(), errorMessage, path);
+            ctx.json(error).status(status);
+        });
+
+        app.exception(RequestException.class, (e, ctx) -> {
+            HttpStatus status = HttpStatus.BAD_REQUEST;
+            String errorMessage = e.getMessage();
+            String path = ctx.path();
+            DefaultError error = new DefaultError(status.toString(), errorMessage, path);
+            ctx.json(error).status(status);
         });
     }
 }
