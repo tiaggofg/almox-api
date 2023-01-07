@@ -1,10 +1,13 @@
 package com.dev.godoy.almox.api;
 
 import com.dev.godoy.almox.api.config.Config;
+import com.dev.godoy.almox.api.controllers.PersonController;
 import com.dev.godoy.almox.api.controllers.ProductController;
 import com.dev.godoy.almox.api.controllers.WarehouseController;
+import com.dev.godoy.almox.api.repositories.PersonRepository;
 import com.dev.godoy.almox.api.repositories.ProductRepository;
 import com.dev.godoy.almox.api.repositories.WarehouseRepository;
+import com.dev.godoy.almox.api.services.PersonService;
 import com.dev.godoy.almox.api.services.ProductService;
 import com.dev.godoy.almox.api.services.WarehouseService;
 import com.mongodb.client.MongoClient;
@@ -30,6 +33,10 @@ public class Application {
         WarehouseService warehouseService = new WarehouseService(warehouseRepository);
         WarehouseController warehouseController = new WarehouseController(warehouseService);
 
+        PersonRepository personRepository = new PersonRepository(database);
+        PersonService personService = new PersonService(personRepository);
+        PersonController personController = new PersonController(personService);
+
         app.routes(() -> {
             path("product", () -> {
                 get(productController::get);
@@ -47,6 +54,21 @@ public class Application {
                     get(warehouseController::getByNumber);
                     put(warehouseController::put);
                     delete(warehouseController::delete);
+                });
+            });
+            path("person", () -> {
+                get(personController::getAll);
+                post(personController::post);
+                path("physical", () -> {
+                    get(personController::getAllPhysicalPerson);
+                });
+                path("legal", () -> {
+                    get(personController::getAllLegalPerson);
+                });
+                path("{document}", () -> {
+                    get(personController::getByDocument);
+                    put(personController::put);
+                    delete(personController::delete);
                 });
             });
         });

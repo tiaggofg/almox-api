@@ -1,9 +1,12 @@
 package com.dev.godoy.almox.api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Objects;
 
-public class Person {
+public abstract class Person {
 
+    @JsonIgnore
     private String id;
     private String name;
     private String contact;

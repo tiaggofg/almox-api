@@ -4,7 +4,6 @@ import java.util.Objects;
 
 public class Address {
 
-    private String id;
     private String street;
     private String district;
     private int number;
@@ -15,22 +14,13 @@ public class Address {
     public Address() {
     }
 
-    public Address(String id, String street, String district, int number, String cep, String city, String uf) {
-        this.id = id;
+    public Address(String street, String district, int number, String cep, String city, String uf) {
         this.street = street;
         this.district = district;
         this.number = number;
         this.cep = cep;
         this.city = city;
         this.uf = uf;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getStreet() {
@@ -86,11 +76,11 @@ public class Address {
         if (this == o) return true;
         if (!(o instanceof Address)) return false;
         Address address = (Address) o;
-        return Objects.equals(id, address.id);
+        return Objects.equals(cep, address.cep);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(cep);
     }
 }
