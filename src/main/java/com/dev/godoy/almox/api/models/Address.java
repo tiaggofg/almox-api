@@ -7,18 +7,18 @@ public class Address {
     private String street;
     private String district;
     private int number;
-    private String cep;
+    private String zipCode;
     private String city;
     private String uf;
 
     public Address() {
     }
 
-    public Address(String street, String district, int number, String cep, String city, String uf) {
+    public Address(String street, String district, int number, String zipCode, String city, String uf) {
         this.street = street;
         this.district = district;
         this.number = number;
-        this.cep = cep;
+        this.zipCode = zipCode;
         this.city = city;
         this.uf = uf;
     }
@@ -47,12 +47,12 @@ public class Address {
         this.number = number;
     }
 
-    public String getCep() {
-        return cep;
+    public String getZipCode() {
+        return zipCode;
     }
 
-    public void setCep(String cep) {
-        this.cep = cep;
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
     }
 
     public String getCity() {
@@ -76,11 +76,11 @@ public class Address {
         if (this == o) return true;
         if (!(o instanceof Address)) return false;
         Address address = (Address) o;
-        return Objects.equals(cep, address.cep);
+        return Objects.equals(zipCode, address.zipCode);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(cep);
+        return Objects.hash(zipCode);
     }
 }

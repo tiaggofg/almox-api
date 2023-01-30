@@ -1,15 +1,18 @@
 package com.dev.godoy.almox.api;
 
 import com.dev.godoy.almox.api.config.Config;
+import com.dev.godoy.almox.api.controllers.InvoiceController;
 import com.dev.godoy.almox.api.controllers.PersonController;
 import com.dev.godoy.almox.api.controllers.ProductController;
 import com.dev.godoy.almox.api.controllers.WarehouseController;
 import com.dev.godoy.almox.api.exceptions.DefaultError;
 import com.dev.godoy.almox.api.exceptions.ObjectNotFoundException;
 import com.dev.godoy.almox.api.exceptions.RequestException;
+import com.dev.godoy.almox.api.repositories.InvoiceRepository;
 import com.dev.godoy.almox.api.repositories.PersonRepository;
 import com.dev.godoy.almox.api.repositories.ProductRepository;
 import com.dev.godoy.almox.api.repositories.WarehouseRepository;
+import com.dev.godoy.almox.api.services.InvoiceService;
 import com.dev.godoy.almox.api.services.PersonService;
 import com.dev.godoy.almox.api.services.ProductService;
 import com.dev.godoy.almox.api.services.WarehouseService;
@@ -40,6 +43,10 @@ public class Application {
         PersonRepository personRepository = new PersonRepository(database);
         PersonService personService = new PersonService(personRepository);
         PersonController personController = new PersonController(personService);
+
+        InvoiceRepository invoiceRepository = new InvoiceRepository(database);
+        InvoiceService invoiceService = new InvoiceService(invoiceRepository);
+        InvoiceController invoiceController = new InvoiceController(invoiceService);
 
         app.routes(() -> {
             path("product", () -> {
@@ -74,6 +81,9 @@ public class Application {
                     put(personController::put);
                     delete(personController::delete);
                 });
+            });
+            path("invoice", () -> {
+                post(invoiceController::post);
             });
         });
 
