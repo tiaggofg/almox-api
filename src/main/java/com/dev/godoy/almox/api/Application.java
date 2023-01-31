@@ -84,6 +84,10 @@ public class Application {
             });
             path("invoice", () -> {
                 post(invoiceController::post);
+                get(invoiceController::getAll);
+                path("{invoiceNumber}", () -> {
+                    get(invoiceController::getByNumber);
+                });
             });
         });
 

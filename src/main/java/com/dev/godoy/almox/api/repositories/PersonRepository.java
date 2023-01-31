@@ -1,11 +1,13 @@
 package com.dev.godoy.almox.api.repositories;
 
 import com.dev.godoy.almox.api.exceptions.ObjectNotFoundException;
+import com.dev.godoy.almox.api.models.Address;
 import com.dev.godoy.almox.api.models.LegalPerson;
 import com.dev.godoy.almox.api.models.Person;
 import com.dev.godoy.almox.api.models.PhysicalPerson;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
@@ -101,5 +103,31 @@ public class PersonRepository {
         if (person == null) {
             throw new ObjectNotFoundException("Nenhuma pessoa deleteada. CNPJ: " + cnpj + " não econtrado!");
         }
+    }
+
+    public static Person bsonDocumentToPerson(Document document) {
+        String name = document.getString("name");
+        String contact = document.getString("contact");
+        String email = document.getString("email");
+        Address address = bsonDocumentToAddress((Document) document.get("address"));
+        Person person = null;
+        if (document.containsKey("cpf")) {
+            String cpf = document.getString("cpf");
+            person = new PhysicalPerson(null, name, contact, email, address, cpf);
+        } else {
+            String cnpj = document.getString("cnpj");
+            person = new LegalPerson(null, name, contact, email, address, cnpj);
+        }
+        return person;
+    }
+
+    private static Address bsonDocumentToAddress(Document document) {
+        String street = document.getString("street");
+        String district = document.getString("district");
+        String zipCode = document.getString("zipCode");
+        String city = document.getString("city");
+        String uf = document.getString("uf");
+        int number = document.getInteger("number");
+        return new Address(street, district, number, zipCode, city, uf);
     }
 }

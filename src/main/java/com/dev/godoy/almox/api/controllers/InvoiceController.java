@@ -3,14 +3,12 @@ package com.dev.godoy.almox.api.controllers;
 import com.dev.godoy.almox.api.dtos.ProductInvoiceDto;
 import com.dev.godoy.almox.api.models.*;
 import com.dev.godoy.almox.api.services.InvoiceService;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
