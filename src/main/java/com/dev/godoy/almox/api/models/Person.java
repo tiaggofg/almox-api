@@ -1,7 +1,9 @@
 package com.dev.godoy.almox.api.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.bson.Document;
 
+import java.util.Map;
 import java.util.Objects;
 
 public abstract class Person {
@@ -62,6 +64,44 @@ public abstract class Person {
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public static Person fromBsonDocument(Document document) {
+        String name = document.getString("name");
+        String contact = document.getString("contact");
+        String email = document.getString("email");
+
+        Address address = Address.fromBson((Document) document.get("address"));
+
+        Person person = null;
+        if (document.containsKey("cpf")) {
+            String cpf = document.getString("cpf");
+            person = new PhysicalPerson(null, name, contact, email, address, cpf);
+        } else {
+            String cnpj = document.getString("cnpj");
+            person = new LegalPerson(null, name, contact, email, address, cnpj);
+        }
+
+        return person;
+    }
+
+    public static Person fromMap(Map<String, Object> personMap) {
+        String contact = (String) personMap.get("name");
+        String email = (String) personMap.get("contact");
+        String name = (String) personMap.get("name");
+
+        Address address = Address.fromMap((Map<String, Object>) personMap.get("address"));
+
+        Person person = null;
+        if (personMap.containsKey("cpf")) {
+            String cpf = (String) personMap.get("cpf");
+            person = new PhysicalPerson(null, name, contact, email, address, cpf);
+        } else {
+            String cnpj = (String) personMap.get("cnpj");
+            person = new LegalPerson(null, name, contact, email, address, cnpj);
+        }
+
+        return person;
     }
 
     @Override

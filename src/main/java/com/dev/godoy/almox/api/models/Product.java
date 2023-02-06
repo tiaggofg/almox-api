@@ -1,6 +1,7 @@
 package com.dev.godoy.almox.api.models;
 
 import com.dev.godoy.almox.api.dtos.ProductDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.Objects;
 public class Product implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @JsonIgnore
     private String id;
     private String code;
     private String description;

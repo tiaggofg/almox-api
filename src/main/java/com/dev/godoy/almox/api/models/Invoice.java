@@ -2,8 +2,11 @@ package com.dev.godoy.almox.api.models;
 
 import com.dev.godoy.almox.api.dtos.ProductInvoiceDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.bson.Document;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class Invoice {
@@ -94,6 +97,37 @@ public class Invoice {
 
     public void setProducts(List<ProductInvoiceDto> products) {
         this.products = products;
+    }
+
+    public static Invoice fromBsonDocument(Document document) {
+        int number = document.getInteger("invoiceNumber");
+        String type = document.getString("type");
+        String origin = document.getString("origin");
+
+        Person issuer = Person.fromBsonDocument((Document) document.get("issuer"));
+        Person receiver = Person.fromBsonDocument((Document) document.get("receiver"));
+        Person carrier = Person.fromBsonDocument((Document) document.get("carrier"));
+
+        List<ProductInvoiceDto> products = new ArrayList<>();
+        for (Document doc : (List<Document>) document.get("products")) {
+            ProductInvoiceDto product = ProductInvoiceDto.fromBsonDocument(doc);
+            products.add(product);
+        }
+
+        return new Invoice(null, number, Type.valueOf(type), Origin.valueOf(origin), issuer, receiver, carrier, products);
+    }
+
+    public static Invoice fromMap(Map<String, Object> invoiceMap) {
+        int number = (int) invoiceMap.get("invoiceNumber");
+        String type = (String) invoiceMap.get("type");
+        String origin = (String) invoiceMap.get("origin");
+
+        Person issuer = Person.fromMap((Map<String, Object>) invoiceMap.get("issuer"));
+        Person receiver = Person.fromMap((Map<String, Object>) invoiceMap.get("receiver"));
+        Person carrier = Person.fromMap((Map<String, Object>) invoiceMap.get("carrier"));
+        List<ProductInvoiceDto> products = (List<ProductInvoiceDto>) invoiceMap.get("products");
+
+        return new Invoice(null, number, Type.valueOf(type), Origin.valueOf(origin), issuer, receiver, carrier, products);
     }
 
     @Override

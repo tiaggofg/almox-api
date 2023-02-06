@@ -2,7 +2,6 @@ package com.dev.godoy.almox.api.services;
 
 import com.dev.godoy.almox.api.models.Invoice;
 import com.dev.godoy.almox.api.repositories.InvoiceRepository;
-import org.bson.Document;
 
 import java.util.List;
 

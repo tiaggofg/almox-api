@@ -1,5 +1,7 @@
 package com.dev.godoy.almox.api.dtos;
 
+import org.bson.Document;
+
 public class ProductInvoiceDto {
 
     private String code;
@@ -77,5 +79,34 @@ public class ProductInvoiceDto {
 
     public void setTotalValue(double totalValue) {
         this.totalValue = totalValue;
+    }
+
+    public static ProductInvoiceDto fromBsonDocument(Document document) {
+        String code = document.getString("code");
+        String description = document.getString("description");
+        String group = document.getString("group");
+        String um = document.getString("um");
+
+        Object quantity = document.get("quantity");
+        Object unitValue = document.get("unitValue");
+        Object totalValue = document.get("totalValue");
+
+        ProductInvoiceDto productInvoiceDto = new ProductInvoiceDto(code, description, group, um, 0.0, 0.0, 0.0);
+        if (quantity instanceof Double) {
+            productInvoiceDto.setQuantity((double) quantity);
+        } else {
+            productInvoiceDto.setQuantity(Double.parseDouble(String.valueOf(quantity)));
+        }
+        if (unitValue instanceof Double) {
+            productInvoiceDto.setUnitValue((double) unitValue);
+        } else {
+            productInvoiceDto.setUnitValue(Double.parseDouble(String.valueOf(unitValue)));
+        }
+        if (totalValue instanceof Double) {
+            productInvoiceDto.setTotalValue((double) totalValue);
+        } else {
+            productInvoiceDto.setTotalValue(Double.parseDouble(String.valueOf(totalValue)));
+        }
+        return productInvoiceDto;
     }
 }

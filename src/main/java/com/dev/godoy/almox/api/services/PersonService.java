@@ -27,31 +27,19 @@ public class PersonService {
         return repository.findAll();
     }
 
-    public Person findByCpf(Long cpf) {
-        return repository.findByCpf(cpf);
-    }
-
-    public Person findByCnpj(Long cnpj) {
-        return repository.findByCnpj(cnpj);
+    public Person findByDocument(String document) {
+        return repository.findByDocument(document);
     }
 
     public Person save(Person person) {
         return repository.save(person);
     }
 
-    public void updatePhysicalPerson(Long cpf, PhysicalPerson person) {
-        repository.updatePhysicalPerson(cpf, person);
+    public void updatePerson(String document, Person person) {
+        repository.updatePerson(document, person);
     }
 
-    public void updateLegalPerson(Long cnpj, LegalPerson person) {
-        repository.updateLegalPerson(cnpj, person);
-    }
-
-    public void deletePhysicalPerson(Long document) {
-        repository.deletePhysicalPerson(document);
-    }
-
-    public void deleteLegalPerson(Long document) {
-        repository.deleteLegalPerson(document);
+    public void deletePerson(String document) {
+        repository.delete(document);
     }
 }

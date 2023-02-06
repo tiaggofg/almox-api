@@ -1,8 +1,7 @@
 package com.dev.godoy.almox.api.repositories;
 
-import com.dev.godoy.almox.api.dtos.ProductInvoiceDto;
 import com.dev.godoy.almox.api.exceptions.ObjectNotFoundException;
-import com.dev.godoy.almox.api.models.*;
+import com.dev.godoy.almox.api.models.Invoice;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
@@ -26,7 +25,7 @@ public class InvoiceRepository {
     public List<Invoice> findAll() {
         List<Invoice> invoices = new ArrayList<>();
         for (Document doc : documentMongoCollection.find()) {
-            Invoice invoice = bsonDocumentToInvoice(doc);
+            Invoice invoice = Invoice.fromBsonDocument(doc);
             invoices.add(invoice);
         }
         return invoices;
@@ -37,7 +36,7 @@ public class InvoiceRepository {
         if (doc == null) {
             throw new ObjectNotFoundException("Nota número: " + invoiceNumber + " não encontrada!");
         }
-        return bsonDocumentToInvoice(doc);
+        return Invoice.fromBsonDocument(doc);
     }
 
     public Invoice save(Invoice invoice) {
@@ -58,23 +57,5 @@ public class InvoiceRepository {
         if (invoice == null) {
             throw new ObjectNotFoundException("Nota número " + invoiceNumber + " não encontrada!");
         }
-    }
-
-    private Invoice bsonDocumentToInvoice(Document doc) {
-        int number = doc.getInteger("invoiceNumber");
-        String type = doc.getString("type");
-        String origin = doc.getString("origin");
-
-        Person issuer = PersonRepository.bsonDocumentToPerson((Document) doc.get("issuer"));
-        Person receiver = PersonRepository.bsonDocumentToPerson((Document) doc.get("receiver"));
-        Person carrier = PersonRepository.bsonDocumentToPerson((Document) doc.get("carrier"));
-
-        List<ProductInvoiceDto> products = new ArrayList<>();
-        for (Document d : (List<Document>) doc.get("products")) {
-            ProductInvoiceDto product = ProductRepository.bsonDocumentToProduct(d);
-            products.add(product);
-        }
-
-        return new Invoice(null, number, Type.valueOf(type), Origin.valueOf(origin), issuer, receiver, carrier, products);
     }
 }

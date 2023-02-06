@@ -1,11 +1,9 @@
 package com.dev.godoy.almox.api.repositories;
 
-import com.dev.godoy.almox.api.dtos.ProductInvoiceDto;
 import com.dev.godoy.almox.api.exceptions.ObjectNotFoundException;
 import com.dev.godoy.almox.api.models.Product;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
@@ -57,16 +55,5 @@ public class ProductRepository {
         if (product == null) {
             throw new ObjectNotFoundException("Produto código: " + code + " não encontrado!");
         }
-    }
-
-    public static ProductInvoiceDto bsonDocumentToProduct(Document document) {
-        String code = document.getString("code");
-        String description = document.getString("description");
-        String group = document.getString("group");
-        String um = document.getString("um");
-        double quantity = document.getDouble("quantity");
-        double unitValue = document.getDouble("unitValue");
-        double totalValue = document.getDouble("totalValue");
-        return new ProductInvoiceDto(code, description, group, um, quantity, unitValue, totalValue);
     }
 }

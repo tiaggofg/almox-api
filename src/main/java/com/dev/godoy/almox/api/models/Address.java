@@ -1,5 +1,8 @@
 package com.dev.godoy.almox.api.models;
 
+import org.bson.Document;
+
+import java.util.Map;
 import java.util.Objects;
 
 public class Address {
@@ -69,6 +72,26 @@ public class Address {
 
     public void setUf(String uf) {
         this.uf = uf;
+    }
+
+    public static Address fromMap(Map<String, Object> map) {
+        String street = (String) map.get("street");
+        String district = (String) map.get("district");
+        String zipCode = (String) map.get("zipCode");
+        String city = (String) map.get("city");
+        String uf = (String) map.get("uf");
+        int number = (int) map.get("number");
+        return new Address(street, district, number, zipCode, city, uf);
+    }
+
+    public static Address fromBson(Document document) {
+        String street = document.getString("street");
+        String district = document.getString("district");
+        String zipCode = document.getString("zipCode");
+        String city = document.getString("city");
+        String uf = document.getString("uf");
+        int number = document.getInteger("number");
+        return new Address(street, district, number, zipCode, city, uf);
     }
 
     @Override

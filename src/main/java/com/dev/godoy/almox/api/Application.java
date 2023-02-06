@@ -87,6 +87,8 @@ public class Application {
                 get(invoiceController::getAll);
                 path("{invoiceNumber}", () -> {
                     get(invoiceController::getByNumber);
+                    put(invoiceController::put);
+                    delete(invoiceController::delete);
                 });
             });
         });

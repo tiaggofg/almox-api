@@ -1,13 +1,11 @@
 package com.dev.godoy.almox.api.repositories;
 
 import com.dev.godoy.almox.api.exceptions.ObjectNotFoundException;
-import com.dev.godoy.almox.api.models.Address;
 import com.dev.godoy.almox.api.models.LegalPerson;
 import com.dev.godoy.almox.api.models.Person;
 import com.dev.godoy.almox.api.models.PhysicalPerson;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
@@ -18,12 +16,12 @@ import static com.mongodb.client.model.Filters.exists;
 
 public class PersonRepository {
 
-    private MongoCollection<Person> collection;
+    private MongoCollection<Person> personCollection;
     private MongoCollection<PhysicalPerson> physicalPersonCollection;
     private MongoCollection<LegalPerson> legalPersonCollection;
 
     public PersonRepository(MongoDatabase database) {
-        collection = database.getCollection("person", Person.class);
+        personCollection = database.getCollection("person", Person.class);
         physicalPersonCollection = database.getCollection("person", PhysicalPerson.class);
         legalPersonCollection = database.getCollection("person", LegalPerson.class);
     }
@@ -51,83 +49,67 @@ public class PersonRepository {
         return result;
     }
 
-    public Person findByCnpj(Long cnpj) {
+    public Person findByDocument(String document) {
+        Person people = null;
+        try {
+           people = findByCpf(document);
+        } catch (ObjectNotFoundException e) {
+            people = findByCnpj(document);
+        }
+        return people;
+    }
+
+    private Person findByCnpj(String cnpj) {
         Person person = legalPersonCollection.find(eq("cnpj", cnpj)).first();
         if (person == null) {
-            throw new ObjectNotFoundException("Pessoa com CPF: " + cnpj + " não encontrado!");
+            throw new ObjectNotFoundException("Pessoa com documento: " + cnpj + " não encontrado!");
         }
         return person;
     }
 
-    public Person findByCpf(Long cpf) {
+    private Person findByCpf(String cpf) {
         Person person = physicalPersonCollection.find(eq("cpf", cpf)).first();
         if (person == null) {
-            throw new ObjectNotFoundException("Pessoa com CPF: " + cpf + " não encontrado!");
+            throw new ObjectNotFoundException("Pessoa com documento: " + cpf + " não encontrado!");
         }
         return person;
     }
 
     public Person save(Person person) {
         person.setId(new ObjectId().toString());
-        collection.insertOne(person);
+        personCollection.insertOne(person);
         return person;
     }
 
-    public void updatePhysicalPerson(Long cpf, PhysicalPerson person) {
-        String id = findByCpf(cpf).getId();
-        person.setId(id);
-        Person newPerson = physicalPersonCollection.findOneAndReplace(eq("cpf", cpf), person);
-        if (newPerson == null) {
-            throw new ObjectNotFoundException("Pessoa com CNPJ: " + cpf + " não encontrada!");
+    public void updatePerson(String document, Person person) {
+        Person updatedPerson = physicalPersonCollection.findOneAndReplace(eq("cpf", document), (PhysicalPerson) person);
+        if (updatedPerson == null) {
+            updatedPerson = legalPersonCollection.findOneAndReplace(eq("cnpj", document), (LegalPerson) person);
+        }
+        if (updatedPerson == null) {
+            throw new ObjectNotFoundException("Pessoa com documento: " + document + " não encontrada!");
         }
     }
 
-    public void updateLegalPerson(Long cnpj, LegalPerson person) {
-        String id = findByCnpj(cnpj).getId();
-        person.setId(id);
-        Person newPerson = legalPersonCollection.findOneAndReplace(eq("cnpj", cnpj), person);
-        if (newPerson == null) {
-            throw new ObjectNotFoundException("Pessoa com CNPJ: " + cnpj + " não encontrada!");
+    public void delete(String document) {
+       try {
+            deletePhysicalPerson(document);
+        } catch (ObjectNotFoundException e) {
+            deleteLegalPerson(document);
         }
     }
 
-    public void deletePhysicalPerson(Long cpf) {
-        PhysicalPerson person = physicalPersonCollection.findOneAndDelete(eq("cpf", cpf));
+    private void deletePhysicalPerson(String document) {
+        PhysicalPerson person = physicalPersonCollection.findOneAndDelete(eq("cpf", document));
         if (person == null) {
-            throw new ObjectNotFoundException("Nenhuma pessoa deleteada. CPF: " + cpf + " não econtrado!");
+            throw new ObjectNotFoundException("Nenhuma pessoa deleteada. Documento: " + document + " não econtrado!");
         }
     }
 
-    public void deleteLegalPerson(Long cnpj) {
-        LegalPerson person = legalPersonCollection.findOneAndDelete(eq("cnpj", cnpj));
+    private void deleteLegalPerson(String document) {
+        LegalPerson person = legalPersonCollection.findOneAndDelete(eq("cnpj", document));
         if (person == null) {
-            throw new ObjectNotFoundException("Nenhuma pessoa deleteada. CNPJ: " + cnpj + " não econtrado!");
+            throw new ObjectNotFoundException("Nenhuma pessoa deleteada. Documento: " + document + " não econtrado!");
         }
-    }
-
-    public static Person bsonDocumentToPerson(Document document) {
-        String name = document.getString("name");
-        String contact = document.getString("contact");
-        String email = document.getString("email");
-        Address address = bsonDocumentToAddress((Document) document.get("address"));
-        Person person = null;
-        if (document.containsKey("cpf")) {
-            String cpf = document.getString("cpf");
-            person = new PhysicalPerson(null, name, contact, email, address, cpf);
-        } else {
-            String cnpj = document.getString("cnpj");
-            person = new LegalPerson(null, name, contact, email, address, cnpj);
-        }
-        return person;
-    }
-
-    private static Address bsonDocumentToAddress(Document document) {
-        String street = document.getString("street");
-        String district = document.getString("district");
-        String zipCode = document.getString("zipCode");
-        String city = document.getString("city");
-        String uf = document.getString("uf");
-        int number = document.getInteger("number");
-        return new Address(street, district, number, zipCode, city, uf);
     }
 }

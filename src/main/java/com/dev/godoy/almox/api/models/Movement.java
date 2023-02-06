@@ -1,11 +1,13 @@
 package com.dev.godoy.almox.api.models;
 
 import com.dev.godoy.almox.api.dtos.ProductDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Date;
 
 public class Movement {
 
+    @JsonIgnore
     private String id;
     private ProductDto product;
     private float quantity;
